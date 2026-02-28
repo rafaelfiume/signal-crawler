@@ -1,4 +1,4 @@
-package io.rf.crawler.core
+package io.rf.crawler.domain
 
 import munit.FunSuite
 import org.http4s.Uri

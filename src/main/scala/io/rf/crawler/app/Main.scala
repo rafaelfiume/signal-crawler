@@ -1,7 +1,7 @@
 package io.rf.crawler.app
 
 import cats.effect.{ExitCode, IO, IOApp}
-import io.rf.crawler.core.Orchestrator
+import io.rf.crawler.application.Orchestrator
 import io.rf.crawler.domain.UrlValidator
 import org.http4s.Uri
 import org.typelevel.log4cats.SelfAwareStructuredLogger

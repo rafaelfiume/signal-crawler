@@ -1,4 +1,4 @@
-package io.rf.crawler.ingestion
+package io.rf.crawler.application.data
 
 import cats.effect.Async
 import cats.implicits.*

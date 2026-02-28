@@ -1,4 +1,4 @@
-package io.rf.crawler.ingestion
+package io.rf.crawler.application.data
 
 import io.rf.crawler.domain.*
 import org.http4s.Uri
@@ -27,6 +27,5 @@ object LinkExtractor:
           .map(_.attr("abs:href"))
           .flatMap(href => Uri.fromString(href).toOption) // silently drops invalid uri's
           .toSet
-
         PageLinks(page.url, links)
-      }.toEither.left.map(ex => s"{$page.url}; ${ex.getMessage()}")
+      }.toEither.left.map(ex => s"${page.url}; ${ex.getMessage()}")

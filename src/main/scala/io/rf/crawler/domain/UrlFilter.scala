@@ -1,6 +1,5 @@
-package io.rf.crawler.core
+package io.rf.crawler.domain
 
-import io.rf.crawler.domain.UrlValidator
 import org.http4s.Uri
 
 trait UrlFilter:
@@ -13,5 +12,4 @@ object UrlFilter:
     else
       new UrlFilter:
         override def accept(url: Uri): Boolean =
-          if UrlValidator.hasAllowedSchemes(url) then seed.host == url.host
-          else false
+          UrlValidator.hasAllowedSchemes(url) && seed.host == url.host

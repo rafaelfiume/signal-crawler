@@ -1,11 +1,11 @@
 package io.rf.crawler.app
 
 import cats.effect.{Async, Resource, Sync}
-import io.rf.crawler.core.{Deduplicator, UrlFilter}
-import io.rf.crawler.domain.HtmlPage
+import io.rf.crawler.application.data.{Deduplicator, Fetcher, LinkExtractor}
+import io.rf.crawler.domain.{HtmlPage, UrlFilter}
 import io.rf.crawler.emission.Emitter
-import io.rf.crawler.ingestion.{Fetcher, LinkExtractor}
 import org.http4s.Uri
+import org.http4s.client.middleware.FollowRedirect
 import org.http4s.ember.client.EmberClientBuilder
 import org.typelevel.log4cats.{LoggerFactory, SelfAwareStructuredLogger}
 import org.typelevel.log4cats.slf4j.Slf4jFactory
@@ -21,8 +21,9 @@ object Components:
   given [F[_]: Sync] => LoggerFactory[F] = Slf4jFactory.create[F]
 
   def make[F[_]: Async](seed: Uri)(implicit logger: SelfAwareStructuredLogger[F]): Resource[F, Components[F]] =
+    val maxRedirects = 3
     for
-      httpClient <- EmberClientBuilder.default[F].build
+      httpClient <- EmberClientBuilder.default[F].build.map(FollowRedirect(maxRedirects)(_))
       deduplicator0 <- Resource.eval(Deduplicator.make())
     yield new Components[F]:
       override def fetcher: Fetcher[F, HtmlPage] = Fetcher.makeHtmlPageFetcher(httpClient)

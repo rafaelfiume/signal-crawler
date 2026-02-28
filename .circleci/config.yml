@@ -1,0 +1,59 @@
+version: 2.1
+
+executors:
+  scala-executor:
+    docker:
+      - image: cimg/openjdk:21.0
+    working_directory: ~/repo
+
+commands:
+  restore-sbt-cache:
+    steps:
+      - restore_cache:
+          keys:
+            - sbt-cache-v2-{{ checksum "build.sbt" }}
+            - sbt-cache-v2-
+
+  save-sbt-cache:
+    steps:
+      - save_cache:
+          key: sbt-cache-v2-{{ checksum "build.sbt" }}
+          paths:
+            - ~/.ivy2/cache
+            - ~/.sbt
+            - ~/.cache/coursier
+
+jobs:
+  quality:
+    executor: scala-executor
+    steps:
+      - checkout
+      - restore-sbt-cache
+      - run:
+          name: Scalafmt check
+          command: sbt scalafmtCheckAll
+      - run:
+          name: Scalafix check
+          command: sbt "scalafixAll --check"
+      - save-sbt-cache
+
+  build-and-test:
+    executor: scala-executor
+    steps:
+      - checkout
+      - restore-sbt-cache
+      - run:
+          name: Compile
+          command: sbt -v compile
+      - run:
+          name: Run tests
+          command: sbt -v test
+      - save-sbt-cache
+
+workflows:
+  build:
+    jobs:
+      - quality
+      - build-and-test:
+          requires:
+            - quality
