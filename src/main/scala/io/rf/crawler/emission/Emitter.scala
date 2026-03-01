@@ -10,10 +10,9 @@ trait Emitter[F[_]]:
 
 object Emitter:
   def makeStdout[F[_]: Monad]()(implicit logger: SelfAwareStructuredLogger[F]): Emitter[F] = new Emitter[F]:
-    def emit(result: PageLinks): F[Unit] =
-      {
-        val sb = StringBuilder()
-        sb.append(s"Page found: ${result.page}\n")
-        result.links.toList.sorted.foreach(l => sb.append(s"  link: $l\n"))
-        sb.toString()
-      }.pure[F].flatMap(msg => logger.info(msg))
+    def emit(result: PageLinks): F[Unit] = {
+      val sb = StringBuilder()
+      sb.append(s"Page found: ${result.page}\n")
+      result.links.toList.sorted.foreach(l => sb.append(s"  link: $l\n"))
+      sb.toString()
+    }.pure[F].flatMap(msg => logger.info(msg))

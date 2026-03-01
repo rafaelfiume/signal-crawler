@@ -2,7 +2,14 @@ val scala3Version = "3.7.4"
 
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
+
 ThisBuild / fork := true
+Compile / run / javaOptions ++= Seq(
+  "-Xms1G",
+  "-Xmx3G",
+  "-XX:+UseG1GC",
+  "-XX:MaxGCPauseMillis=200"
+)
 
 scalacOptions ++= Seq(
   "-Wunused:imports"
