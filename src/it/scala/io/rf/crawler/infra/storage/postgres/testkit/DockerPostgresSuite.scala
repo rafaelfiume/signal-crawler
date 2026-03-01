@@ -1,0 +1,85 @@
+package io.rf.crawler.infra.storage.postgres.testkit
+
+import cats.effect.{IO, Resource}
+import cats.~>
+import ciris.Secret
+import com.dimafeng.testcontainers.PostgreSQLContainer
+import doobie.{ConnectionIO, Transactor, WeakAsync}
+import doobie.hikari.HikariTransactor
+import doobie.implicits.*
+import doobie.util.log.{LogEvent, LogHandler}
+import io.rf.crawler.infra.storage.postgres.{DatabaseConfig, SchemaMigration}
+import munit.CatsEffectSuite
+import org.testcontainers.containers.PostgreSQLContainer as JavaPostgreSQLContainer
+import org.testcontainers.utility.DockerImageName
+
+import java.util.concurrent.Executors
+import scala.concurrent.ExecutionContext
+
+trait DockerPostgresSuite extends CatsEffectSuite:
+
+  case class DbContainerAndTransactor(
+    container: PostgreSQLContainer,
+    transactor: Transactor[IO],
+    functionK: IO ~> ConnectionIO
+  )
+
+  override def munitFixtures = List(dbContainerAndTransactor)
+
+  // TODO Delete this??
+  def lift: [A] => IO[A] => ConnectionIO[A] = [A] => (fa: IO[A]) => naturalTransformation()(fa)
+
+  /*
+   * Mostly used to clean tables after running test.
+   */
+  def will[A](dbOps: ConnectionIO[Unit])(program: IO[A]): IO[A] =
+    program.guarantee(dbOps.transact(dbContainerAndTransactor().transactor))
+
+  def container(): PostgreSQLContainer = dbContainerAndTransactor().container
+
+  def transactor(): Transactor[IO] = dbContainerAndTransactor().transactor
+
+  private def naturalTransformation() = dbContainerAndTransactor().functionK
+
+  private val dbContainerAndTransactor = ResourceSuiteLocalFixture(
+    "db-session",
+    for
+      container <- Resource
+        .make(
+          IO {
+            val containerDef: PostgreSQLContainer.Def =
+              PostgreSQLContainer.Def(
+                dockerImageName = DockerImageName.parse(s"postgres:${DockerDatabaseConfig.postgreSQLVersion}"),
+                databaseName = DockerDatabaseConfig.database,
+                username = DockerDatabaseConfig.user,
+                password = DockerDatabaseConfig.password
+              )
+            containerDef.start()
+          }
+        )(c => IO(c.stop()))
+      connectionPool: ExecutionContext = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(4))
+      dbConfig = DatabaseConfig(
+        driver = DockerDatabaseConfig.driver,
+        host = container.host,
+        port = container.mappedPort(JavaPostgreSQLContainer.POSTGRESQL_PORT),
+        name = DockerDatabaseConfig.database,
+        user = DockerDatabaseConfig.user,
+        password = Secret[String](DockerDatabaseConfig.password),
+        dbPoolThreads = 10 // ?
+      )
+      debugSql = false // set to 'true' to log SQL queries
+      // See also: https://typelevel.org/doobie/docs/10-Logging.html
+      printSqlLogHandler = new LogHandler[IO]:
+        def run(logEvent: LogEvent): IO[Unit] = IO.delay { if debugSql then println(logEvent.sql) }
+      tx <- HikariTransactor.newHikariTransactor[IO](
+        DockerDatabaseConfig.driver,
+        dbConfig.jdbcUri.renderString,
+        DockerDatabaseConfig.user,
+        DockerDatabaseConfig.password,
+        connectionPool,
+        Some(printSqlLogHandler)
+      )
+      functionK <- WeakAsync.liftK[IO, ConnectionIO]
+      _ <- SchemaMigration[IO](dbConfig).toResource
+    yield DbContainerAndTransactor(container, tx, functionK)
+  )
