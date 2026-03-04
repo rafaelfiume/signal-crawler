@@ -15,10 +15,11 @@ Compile / run / javaOptions ++= Seq(
 )
 
 lazy val testDeps = Seq(
-  "org.scalameta" %% "munit"                   % "1.0.0"      % Test,
-  "org.scalameta" %% "munit-scalacheck"        % "1.1.0"      % Test,
-  "org.typelevel" %% "munit-cats-effect"       % "2.1.0"      % Test,
-  "org.typelevel" %% "scalacheck-effect-munit" % "1.0.4"      % Test
+  "org.scalameta"        %% "munit"                               % "1.0.0"       % Test,
+  "org.scalameta"        %% "munit-scalacheck"                    % "1.1.0"       % Test,
+  "org.typelevel"        %% "cats-effect-testkit"                 % "3.7-4972921" % Test,
+  "org.typelevel"        %% "munit-cats-effect"                   % "2.1.0"       % Test,
+  "org.typelevel"        %% "scalacheck-effect-munit"             % "1.0.4"       % Test
 )
 
 lazy val itTestDeps = Seq(
