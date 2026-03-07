@@ -2,7 +2,7 @@ package io.rf.crawler.runtime
 
 import cats.effect.{Async, Resource, Sync}
 import cats.effect.std.Queue
-import io.rf.crawler.application.control.{FifoScheduler, Scheduler}
+import io.rf.crawler.application.control.{Coordinator, Scheduler}
 import io.rf.crawler.application.data.{Deduplicator, Fetcher, LinkExtractor, WorkTracker}
 import io.rf.crawler.domain.{HtmlPage, UrlFilter}
 import io.rf.crawler.emission.Emitter
@@ -16,7 +16,6 @@ import org.typelevel.log4cats.slf4j.Slf4jFactory
 import scala.concurrent.duration.*
 
 trait Components[F[_]]:
-  def queue: Queue[F, Uri]
   def ingress: Ingress[F, Uri]
   def scheduler: Scheduler[F]
   def workTracker: WorkTracker[F]
@@ -32,16 +31,17 @@ object Components:
   def make[F[_]: Async](seed: Uri)(implicit logger: SelfAwareStructuredLogger[F]): Resource[F, Components[F]] =
     val maxRedirects = 3
     for
-      queue0 <- Resource.eval(Queue.unbounded[F, Uri])
+      queue <- Resource.eval(Queue.unbounded[F, Uri])
       workTracker0 <- Resource.eval(WorkTracker.make[F]())
       httpClient <- EmberClientBuilder.default[F].build.map(FollowRedirect(maxRedirects)(_))
+      ingress0 = Ingress.makeQueuedIngress(queue)
+      scheduler0 <- Resource.eval(Coordinator.make[F](ingress0.stream, cooldown = 1.second))
       deduplicator0 <- Resource.eval(Deduplicator.make())
     yield new Components[F]:
-      override def queue: Queue[F, Uri] = queue0
+      override def ingress: Ingress[F, Uri] = ingress0
 
-      override def ingress: Ingress[F, Uri] = Ingress.makeQueuedIngress(queue)
-
-      override def scheduler: Scheduler[F] = FifoScheduler.make(ingress.stream, dispatchInterval = 100.millis)
+      // alternatively FifoScheduler.make(ingress.stream, dispatchInterval = 100.millis)
+      override def scheduler: Scheduler[F] = scheduler0
 
       override def workTracker: WorkTracker[F] = workTracker0
 
