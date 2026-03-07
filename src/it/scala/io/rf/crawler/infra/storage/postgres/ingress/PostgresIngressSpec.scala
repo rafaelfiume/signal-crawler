@@ -94,35 +94,16 @@ trait PostgresIngressSpecContext:
     """.query[Long].unique
 
   given Arbitrary[Uri] = Arbitrary {
-
-    val genScheme =
-      Gen.oneOf("http", "https")
-
-    val genHost =
-      for
-        sub <- Gen.alphaLowerStr.suchThat(_.nonEmpty)
-        domain <- Gen.oneOf("com", "org", "net", "io")
-      yield s"$sub.$domain"
-
-    val genPathSegment =
-      Gen.alphaNumStr.suchThat(_.nonEmpty)
-
-    val genPath =
-      Gen.listOf(genPathSegment).map { segments =>
-        segments.foldLeft(Uri.Path.empty)((acc, s) => acc.addSegment(s))
-      }
+    def boundedStr(chars: Gen[Char]) = Gen.choose(1, 12).flatMap(Gen.stringOfN(_, chars))
 
     for
-      scheme <- genScheme
-      host <- genHost
-      path <- genPath
+      scheme <- Gen.oneOf("http", "https")
+      sub <- boundedStr(Gen.alphaLowerChar)
+      tld <- Gen.oneOf("com", "org", "net", "io")
+      segs <- Gen.chooseNum(1, 4).flatMap(Gen.listOfN(_, boundedStr(Gen.alphaNumChar)))
     yield Uri(
       scheme = Some(Uri.Scheme.unsafeFromString(scheme)),
-      authority = Some(
-        Uri.Authority(
-          host = Uri.RegName(host)
-        )
-      ),
-      path = path
+      authority = Some(Uri.Authority(host = Uri.RegName(s"$sub.$tld"))),
+      path = segs.foldLeft(Uri.Path.empty)(_ addSegment _)
     )
   }
