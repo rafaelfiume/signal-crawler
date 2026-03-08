@@ -4,7 +4,7 @@ import cats.effect.Async
 import cats.effect.implicits.*
 import cats.implicits.*
 import io.rf.crawler.application.data.{Deduplicator, Fetcher, LinkExtractor}
-import io.rf.crawler.domain.{HtmlPage, UrlFilter, UrlNormaliser}
+import io.rf.crawler.domain.{DomainBlocklist, HtmlPage, UrlFilter, UrlNormaliser}
 import io.rf.crawler.emission.Emitter
 import io.rf.crawler.ingress.Ingress
 import org.http4s.Uri
@@ -17,7 +17,6 @@ class Worker[F[_]: Async](
   fetcher: Fetcher[F, HtmlPage],
   linkExtractor: LinkExtractor,
   emitter: Emitter[F],
-  urlFilter: UrlFilter,
   deduplicator: Deduplicator[F],
   maxConcurrency: Int = 16 // may need tuning: set relatively high since orchestrator is I/O bounded (not cpu)
 )(using logger: SelfAwareStructuredLogger[F]):
@@ -28,11 +27,11 @@ class Worker[F[_]: Async](
 
     (for
       htmlPage <- fetcher.fetch(url)
-      pageLinks <- linkExtractor.extract(htmlPage) match
+      page <- linkExtractor.extract(htmlPage) match
         case Right(links) => links.pure
         case Left(err)    => Async[F].raiseError(DomainError(err))
-      _ <- emitter.emit(pageLinks)
-      acceptedLinks = pageLinks.links.filter(urlFilter.accept)
+      // _ <- emitter.emit(page)
+      acceptedLinks = page.links.filterNot(DomainBlocklist.isBlocked).filter(UrlFilter.accept)
       canonicalisedLinks = acceptedLinks.map(UrlNormaliser.canonicalise)
       deduplicatedLinks <- canonicalisedLinks.toVector.filterA(link => deduplicator.hasSeen(link).map(!_))
       _ <- publish(deduplicatedLinks)

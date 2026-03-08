@@ -4,7 +4,7 @@ import cats.effect.{Async, Resource, Sync}
 import cats.effect.std.Queue
 import io.rf.crawler.application.control.{Coordinator, Scheduler}
 import io.rf.crawler.application.data.{Deduplicator, Fetcher, LinkExtractor, WorkTracker}
-import io.rf.crawler.domain.{HtmlPage, UrlFilter}
+import io.rf.crawler.domain.HtmlPage
 import io.rf.crawler.emission.Emitter
 import io.rf.crawler.ingress.Ingress
 import org.http4s.Uri
@@ -22,18 +22,17 @@ trait Components[F[_]]:
   def fetcher: Fetcher[F, HtmlPage]
   def extractor: LinkExtractor
   def emitter: Emitter[F]
-  def urlFilter: UrlFilter
   def deduplicator: Deduplicator[F]
 
 object Components:
   given [F[_]: Sync] => LoggerFactory[F] = Slf4jFactory.create[F]
 
-  def make[F[_]: Async](seed: Uri)(implicit logger: SelfAwareStructuredLogger[F]): Resource[F, Components[F]] =
+  def make[F[_]: Async](implicit logger: SelfAwareStructuredLogger[F]): Resource[F, Components[F]] =
     val maxRedirects = 3
     for
-      queue <- Resource.eval(Queue.unbounded[F, Uri])
       workTracker0 <- Resource.eval(WorkTracker.make[F]())
       httpClient <- EmberClientBuilder.default[F].build.map(FollowRedirect(maxRedirects)(_))
+      queue <- Resource.eval(Queue.unbounded[F, Uri])
       ingress0 = Ingress.makeQueuedIngress(queue)
       scheduler0 <- Resource.eval(Coordinator.make[F](ingress0.stream, cooldown = 1.second))
       deduplicator0 <- Resource.eval(Deduplicator.make())
@@ -50,7 +49,5 @@ object Components:
       override def extractor: LinkExtractor = LinkExtractor.make()
 
       override def emitter: Emitter[F] = Emitter.makeStdout()
-
-      override def urlFilter: UrlFilter = UrlFilter.makeForSeed(seed)
 
       override def deduplicator: Deduplicator[F] = deduplicator0
