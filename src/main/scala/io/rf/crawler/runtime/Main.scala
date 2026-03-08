@@ -21,7 +21,7 @@ object Main extends IOApp:
 
       case Right(seed) =>
         Components
-          .make[IO](seed)
+          .make[IO]
           .flatMap { comps =>
             for _ <- Resource.eval(plant(seed, comps))
             yield Worker[IO](
@@ -31,7 +31,6 @@ object Main extends IOApp:
               comps.fetcher,
               comps.extractor,
               comps.emitter,
-              comps.urlFilter,
               comps.deduplicator,
               maxConcurrency = 4 // reduced concurrency since I'm mostly running it in very slow machines
             ).run.interruptWhen(comps.workTracker.haltSignal)
