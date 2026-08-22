@@ -53,8 +53,8 @@ lazy val root = project
       "org.http4s"    %% "http4s-ember-client"                 % "1.0.0-M44",
       "org.http4s"    %% "http4s-ember-server"                 % "1.0.0-M44",
 
-      "org.flywaydb"  %  "flyway-core"                         % "11.9.1",
-      "org.flywaydb"  %  "flyway-database-postgresql"          % "11.9.1",
+      "org.flywaydb"  %  "flyway-core"                         % "11.9.2",
+      "org.flywaydb"  %  "flyway-database-postgresql"          % "11.9.2",
 
       "org.tpolecat"  %% "doobie-postgres-circe"               % "1.0.0-RC9",
       "org.tpolecat"  %% "doobie-core"                         % "1.0.0-RC9",
