@@ -44,8 +44,8 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "is.cir"        %% "ciris"                               % "3.15.0",
 
-      "co.fs2"        %% "fs2-core"                            % "3.12.2",
-			"co.fs2"        %% "fs2-io"                              % "3.12.2",
+      "co.fs2"        %% "fs2-core"                            % "3.13.0",
+			"co.fs2"        %% "fs2-io"                              % "3.13.0",
 
       "org.jsoup"     %  "jsoup"                               % "1.2.3",
 
