@@ -42,7 +42,7 @@ lazy val root = project
     scalaVersion := scala3Version,
 
     libraryDependencies ++= Seq(
-      "is.cir"        %% "ciris"                               % "3.9.0",
+      "is.cir"        %% "ciris"                               % "3.15.0",
 
       "co.fs2"        %% "fs2-core"                            % "3.12.0",
 			"co.fs2"        %% "fs2-io"                              % "3.12.0",
