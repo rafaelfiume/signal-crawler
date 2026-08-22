@@ -65,6 +65,6 @@ lazy val root = project
       "org.typelevel" %% "cats-effect-std"                     % "3.5.3",
 
       "org.typelevel" %% "log4cats-slf4j"                      % "2.7.1",
-      "org.slf4j"     %  "slf4j-simple"                        % "2.0.17",
+      "org.slf4j"     %  "slf4j-simple"                        % "2.0.18",
     ) ++ testDeps ++ itTestDeps
   )
