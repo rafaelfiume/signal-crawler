@@ -47,7 +47,7 @@ lazy val root = project
       "co.fs2"        %% "fs2-core"                            % "3.12.2",
 			"co.fs2"        %% "fs2-io"                              % "3.12.2",
 
-      "org.jsoup"     %  "jsoup"                               % "1.2.3",
+      "org.jsoup"     %  "jsoup"                               % "1.23.1",
 
       "org.http4s"    %% "http4s-dsl"                          % "1.0.0-M44",
       "org.http4s"    %% "http4s-ember-client"                 % "1.0.0-M44",
