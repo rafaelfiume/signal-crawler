@@ -23,8 +23,8 @@ lazy val testDeps = Seq(
 )
 
 lazy val itTestDeps = Seq(
-  "com.dimafeng"         %% "testcontainers-scala-munit"          % "0.43.0"      % Test,
-  "com.dimafeng"         %% "testcontainers-scala-postgresql"     % "0.43.0"      % Test
+  "com.dimafeng"         %% "testcontainers-scala-munit"          % "0.43.6"      % Test,
+  "com.dimafeng"         %% "testcontainers-scala-postgresql"     % "0.43.6"      % Test
 )
 
 lazy val It = config("it").extend(Test)
