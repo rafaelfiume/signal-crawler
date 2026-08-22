@@ -62,7 +62,7 @@ lazy val root = project
       "org.tpolecat"  %% "doobie-hikari"                       % "1.0.0-RC12",
 
       "org.typelevel" %% "cats-effect"                         % "3.7.0",
-      "org.typelevel" %% "cats-effect-std"                     % "3.5.3",
+      "org.typelevel" %% "cats-effect-std"                     % "3.5.7",
 
       "org.typelevel" %% "log4cats-slf4j"                      % "2.7.1",
       "org.slf4j"     %  "slf4j-simple"                        % "2.0.18",
