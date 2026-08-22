@@ -56,10 +56,10 @@ lazy val root = project
       "org.flywaydb"  %  "flyway-core"                         % "11.9.2",
       "org.flywaydb"  %  "flyway-database-postgresql"          % "11.9.2",
 
-      "org.tpolecat"  %% "doobie-postgres-circe"               % "1.0.0-RC12",
-      "org.tpolecat"  %% "doobie-core"                         % "1.0.0-RC12",
-      "org.tpolecat"  %% "doobie-postgres"                     % "1.0.0-RC12",
-      "org.tpolecat"  %% "doobie-hikari"                       % "1.0.0-RC12",
+      "org.typelevel"  %% "doobie-postgres-circe"               % "1.0.0-RC13",
+      "org.typelevel"  %% "doobie-core"                         % "1.0.0-RC13",
+      "org.typelevel"  %% "doobie-postgres"                     % "1.0.0-RC13",
+      "org.typelevel"  %% "doobie-hikari"                       % "1.0.0-RC13",
 
       "org.typelevel" %% "cats-effect"                         % "3.7.0",
       "org.typelevel" %% "cats-effect-std"                     % "3.5.3",
