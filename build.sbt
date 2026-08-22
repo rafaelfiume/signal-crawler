@@ -49,9 +49,9 @@ lazy val root = project
 
       "org.jsoup"     %  "jsoup"                               % "1.23.1",
 
-      "org.http4s"    %% "http4s-dsl"                          % "1.0.0-M44",
-      "org.http4s"    %% "http4s-ember-client"                 % "1.0.0-M44",
-      "org.http4s"    %% "http4s-ember-server"                 % "1.0.0-M44",
+      "org.http4s"    %% "http4s-dsl"                          % "1.0.0-M47",
+      "org.http4s"    %% "http4s-ember-client"                 % "1.0.0-M47",
+      "org.http4s"    %% "http4s-ember-server"                 % "1.0.0-M47",
 
       "org.flywaydb"  %  "flyway-core"                         % "11.20.3",
       "org.flywaydb"  %  "flyway-database-postgresql"          % "11.20.3",
