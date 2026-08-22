@@ -2,8 +2,8 @@ package io.rf.crawler.infra.storage.postgres.ingress
 
 import cats.effect.IO
 import cats.syntax.all.*
-import doobie.*
-import doobie.implicits.*
+import org.typelevel.doobie.*
+import org.typelevel.doobie.implicits.*
 import io.rf.crawler.infra.storage.postgres.PostgresTransactionManager
 import io.rf.crawler.infra.storage.postgres.ingress.PostgresIngress
 import io.rf.crawler.infra.storage.postgres.testkit.DockerPostgresSuite
