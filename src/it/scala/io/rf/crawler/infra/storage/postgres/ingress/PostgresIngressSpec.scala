@@ -2,8 +2,6 @@ package io.rf.crawler.infra.storage.postgres.ingress
 
 import cats.effect.IO
 import cats.syntax.all.*
-import org.typelevel.doobie.*
-import org.typelevel.doobie.implicits.*
 import io.rf.crawler.infra.storage.postgres.PostgresTransactionManager
 import io.rf.crawler.infra.storage.postgres.ingress.PostgresIngress
 import io.rf.crawler.infra.storage.postgres.testkit.DockerPostgresSuite
@@ -11,6 +9,8 @@ import munit.{CatsEffectSuite, ScalaCheckEffectSuite}
 import org.http4s.Uri
 import org.scalacheck.{Arbitrary, Gen, ShrinkLowPriority}
 import org.scalacheck.effect.PropF.forAllF
+import org.typelevel.doobie.*
+import org.typelevel.doobie.implicits.*
 
 class PostgresIngressSpec
     extends CatsEffectSuite

@@ -2,11 +2,11 @@ package io.rf.crawler.infra.storage.postgres.ingress
 
 import cats.effect.Resource
 import cats.implicits.*
+import io.rf.crawler.ingress.Ingress
+import org.http4s.Uri
 import org.typelevel.doobie.*
 import org.typelevel.doobie.free.connection.ConnectionIO
 import org.typelevel.doobie.implicits.*
-import io.rf.crawler.ingress.Ingress
-import org.http4s.Uri
 
 object PostgresIngress:
   def make[F[_]](): Resource[F, Ingress[ConnectionIO, Uri]] =

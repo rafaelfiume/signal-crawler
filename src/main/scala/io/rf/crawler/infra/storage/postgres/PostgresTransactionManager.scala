@@ -2,10 +2,10 @@ package io.rf.crawler.infra.storage.postgres
 
 import cats.effect.{Async, Concurrent, Resource}
 import cats.~>
+import io.rf.crawler.domain.TransactionManager
 import org.typelevel.doobie.{ConnectionIO, Transactor, WeakAsync}
 import org.typelevel.doobie.implicits.*
 import org.typelevel.doobie.util.transactor.Transactor
-import io.rf.crawler.domain.TransactionManager
 
 object PostgresTransactionManager:
   def make[F[_]: Async](tx: Transactor[F]): Resource[F, PostgresTransactionManager[F]] =
