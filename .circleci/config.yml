@@ -32,10 +32,10 @@ jobs:
       - restore-sbt-cache
       - run:
           name: Scalafmt check
-          command: sbt scalafmtCheckAll
+          command: cat /dev/null | sbt scalafmtCheckAll
       - run:
           name: Scalafix check
-          command: sbt "scalafixAll --check"
+          command: cat /dev/null | sbt "scalafixAll --check"
       - save-sbt-cache
 
   build-and-test:
@@ -44,11 +44,8 @@ jobs:
       - checkout
       - restore-sbt-cache
       - run:
-          name: Compile
-          command: sbt -v compile
-      - run:
-          name: Run unit tests
-          command: sbt -v test
+          name: Compile & Run Tests
+          command: cat /dev/null | sbt -v test
       - save-sbt-cache
 
   integration-tests:
