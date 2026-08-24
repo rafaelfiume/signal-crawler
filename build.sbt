@@ -61,8 +61,8 @@ lazy val root = project
       "org.typelevel"  %% "doobie-postgres"                     % "1.0.0-RC13",
       "org.typelevel"  %% "doobie-hikari"                       % "1.0.0-RC13",
 
-      "org.typelevel" %% "cats-effect"                         % "3.7.0",
-      "org.typelevel" %% "cats-effect-std"                     % "3.7.0",
+      "org.typelevel" %% "cats-effect"                         % "3.7.1",
+      "org.typelevel" %% "cats-effect-std"                     % "3.7.1",
 
       "org.typelevel" %% "log4cats-slf4j"                      % "2.8.0",
       "org.slf4j"     %  "slf4j-simple"                        % "2.0.18",
